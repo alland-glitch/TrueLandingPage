@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SyntheraLink</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">SyntheraLink Admin</h1>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="index.html#websites" class="nav-link">Explore</a></li>
+                <li><a href="#dashboard" class="nav-link">Dashboard</a></li>
+                <li class="user-menu">
+                    <a href="#" class="user-toggle">Admin ▼</a>
+                    <ul class="dropdown">
+                        <li><a href="#" id="logoutBtn">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div id="toast-container" class="toast-container"></div>
+
+    <section id="dashboard" class="admin-dashboard">
+        <div class="container">
+            <div class="header-section">
+                <h2>Manage Websites</h2>
+                <p class="submit-description">Review submissions and keep the website list updated.</p>
+            </div>
+
+            <div class="top-actions">
+                <button id="add-website-btn" class="btn btn-primary">Add New Website</button>
+                <input type="text" id="admin-search" class="search-input" placeholder="Search pending submissions...">
+            </div>
+
+            <div class="section">
+                <div id="website-list-admin" class="website-grid">
+                    <!-- Admin website list will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pending-submissions">
+        <div class="container">
+            <div class="header-section">
+                <h2>Pending Submissions</h2>
+            </div>
+
+            <div class="section">
+                <div id="pending-list" class="pending-grid">
+                    <!-- Pending submissions will be loaded here -->
+                </div>
+                <div id="pending-empty" class="empty-state">
+                    <h4>No pending submissions</h4>
+                    <p>All submissions have been reviewed.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="custom-names">
+        <div class="container">
+            <h2>Manage Website Names</h2>
+            <p class="submit-description">Customize display names for friends' websites. Only admins can edit these names.</p>
+            <div id="custom-names-list" class="custom-names-grid">
+                <!-- Custom names will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
