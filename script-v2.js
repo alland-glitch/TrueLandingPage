@@ -192,7 +192,7 @@ function handleRegister(e) {
     setCurrentUser(newUser);
     showToast('Registrasi berhasil!', 'success');
     setTimeout(() => {
-        window.location.href = 'index-v2.html';
+        window.location.href = 'index.html';
     }, 1000);
 }
 
@@ -548,5 +548,4 @@ function animateTrail() {
 
 animateTrail();
 });
-
 
