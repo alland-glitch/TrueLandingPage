@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SyntheraLink - Where Links Come Together</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">SyntheraLink</h1>
+            <ul class="nav-links">
+                <li><a href="index.html#home" class="nav-link">Home</a></li>
+                <li><a href="index.html#websites" class="nav-link">Explore</a></li>
+                <li class="user-menu">
+                    <a href="#" class="user-toggle">User ▼</a>
+                    <ul class="dropdown">
+                        <li><a href="#" id="logoutBtn">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <button id="themeToggle" class="btn btn-secondary theme-toggle" aria-label="Toggle theme">☀️</button>
+        </div>
+    </nav>
+    <div id="toast-container" class="toast-container"></div>
+
+    <section id="home" class="hero fade-in">
+        <div class="container">
+            <h2>Welcome to SyntheraLink</h2>
+            <p class="tagline">Where Links Come Together</p>
+            <p>Discover and connect amazing websites in one unified platform</p>
+            <div class="hero-buttons">
+                <a href="index.html#websites" class="btn btn-primary btn-large">Explore Websites</a>
+                <button id="addWebsiteBtn" class="btn btn-secondary btn-large" onclick="trackClick('addWebsiteBtn')">Add Your Website</button>
+            </div>
+            <div class="search-container">
+                <input type="text" id="search" placeholder="Search websites..." class="search-input">
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="how-it-works fade-in">
+        <div class="container">
+            <h3>How It Works</h3>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-icon">➕</div>
+                    <h4>Add Website</h4>
+                    <p>Submit your favorite websites with descriptions</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">🔍</div>
+                    <h4>Discover Websites</h4>
+                    <p>Browse and explore curated website collections</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">📤</div>
+                    <h4>Share with Others</h4>
+                    <p>Connect and share amazing finds with the community</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features fade-in">
+        <div class="container">
+            <h3>Features</h3>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h4>Multi-User System</h4>
+                    <p>Secure login and user management for all members</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚙️</div>
+                    <h4>Admin Dashboard</h4>
+                    <p>Powerful tools for administrators to manage content</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h4>Website Management</h4>
+                    <p>Easily add, edit, and organize website collections</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="websites" class="websites fade-in">
+        <div class="container">
+            <h3>Featured Websites</h3>
+            <div id="website-list" class="website-grid">
+                <!-- Websites will be loaded here -->
+            </div>
+            <div id="empty-state" class="empty-state">
+                <h4>No websites found</h4>
+                <p>Be the first to add a website!</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="friends-websites" class="websites fade-in">
+        <div class="container">
+            <h3>Friends' Websites</h3>
+            <div id="friends-website-list" class="website-grid">
+                <!-- Friends websites will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <section class="trending fade-in">
+        <div class="container">
+            <h3>Trending Websites</h3>
+            <div id="trending-grid" class="trending-grid">
+                <!-- Trending websites will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <h4>SyntheraLink</h4>
+                <p class="footer-tagline">Where Links Come Together</p>
+                <p>&copy; 2024 SyntheraLink. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

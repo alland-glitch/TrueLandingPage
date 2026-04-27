@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Website Teman 1",
+        "path": "teman1/index.html",
+        "author": "Nama Teman 1",
+        "category": "Game"
+    },
+    {
+        "name": "Website Teman 2",
+        "path": "teman2/index.html",
+        "author": "Nama Teman 2",
+        "category": "Edukasi"
+    }
+]
