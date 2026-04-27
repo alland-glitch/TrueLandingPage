@@ -1191,7 +1191,6 @@ body {
 
 .section {
     margin-top: 40px;
-<<<<<<< HEAD
 }
 
 .cursor-trail {
@@ -1204,6 +1203,4 @@ body {
     z-index: 9999;
     box-shadow: 0 0 10px #00eaff, 0 0 20px #00eaff;
     transform: translate(-50%, -50%);
-=======
->>>>>>> 2bca715cc5392ea95574d8ad5200741f8cc915e1
 }
