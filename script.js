@@ -437,9 +437,15 @@ function enableSmoothScroll() {
     });
 }
 
-// Initialize sample data if not exists
-function initializeData() {
-    if (getUsers().length === 0) {
+// Clean invalid website data
+function cleanWebsiteData() {
+    const websites = getWebsites();
+    const cleaned = websites.filter(site => site.url && site.url.startsWith('http'));
+    if (cleaned.length !== websites.length) {
+        console.log("Cleaned invalid website data");
+        saveWebsites(cleaned);
+    }
+}
         const sampleUsers = [
             { id: 1, email: 'admin@example.com', password: 'admin123', role: 'admin' },
             { id: 2, email: 'user@example.com', password: 'user123', role: 'user' }
@@ -464,7 +470,9 @@ function initializeData() {
     if (!localStorage.getItem('ranking')) {
         localStorage.setItem('ranking', JSON.stringify({}));
     }
-}
+
+    // Clean invalid website data
+    cleanWebsiteData();
 
 // Friends websites data - add your friends' websites here
 const friendsWebsites = [
@@ -658,8 +666,9 @@ function renderWebsites(searchTerm = '') {
     if (!websiteList) return;
 
     const filteredWebsites = websites.filter(website =>
-        website.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        website.description.toLowerCase().includes(searchTerm.toLowerCase())
+        (website.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        website.description.toLowerCase().includes(searchTerm.toLowerCase())) &&
+        website.url && website.url.startsWith('http')
     );
 
     websiteList.innerHTML = '';
@@ -1186,8 +1195,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target.classList.contains('visit-btn')) {
                 const url = e.target.dataset.url;
                 console.log("Opening URL:", url);
-                if (!url) {
-                    alert("Link tidak tersedia!");
+                if (!url || url === "undefined" || !url.startsWith('http')) {
+                    alert("Link tidak valid!");
                     return;
                 }
                 window.open(url, "_blank");
