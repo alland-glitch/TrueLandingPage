@@ -572,4 +572,43 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     animateTrail();
+
+    const websiteForm = document.getElementById('website-form');
+
+if (websiteForm) {
+    websiteForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const name = document.getElementById('modal-name').value.trim();
+        const url = document.getElementById('modal-url').value.trim();
+        const description = document.getElementById('modal-description').value.trim();
+
+        if (!name || !url || !description) {
+            showToast('Semua field harus diisi!', 'error');
+            return;
+        }
+
+        const websites = getWebsites();
+
+        websites.push({
+            id: Date.now(),
+            name,
+            url,
+            description,
+            category: 'General'
+        });
+
+        saveWebsites(websites);
+
+        showToast('Website berhasil ditambahkan!', 'success');
+
+        // reset form & close modal
+        websiteForm.reset();
+        document.getElementById('website-modal').style.display = 'none';
+
+        // refresh list
+        renderAdminWebsites();
+        renderWebsites();
+    });
+  }
 });
