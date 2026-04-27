@@ -161,7 +161,7 @@ function handleLogin(e) {
         setCurrentUser(user);
         showToast('Login berhasil!', 'success');
         setTimeout(() => {
-            window.location.href = user.role === 'admin' ? 'admin-v2.html' : 'index-v2html';
+            window.location.href = user.role === 'admin' ? 'admin-v2.html' : 'index-v2.html';
         }, 1000);
     } else {
         showToast('Email atau password salah.', 'error');
@@ -395,20 +395,20 @@ function initApp() {
         });
     }
 
-    // Add website button
-    const addBtn = document.getElementById('addWebsiteBtn') || document.getElementById('add-website-btn');
-    if (addBtn) {
-        addBtn.addEventListener('click', () => {
-            const user = getCurrentUser();
-            if (!user) {
-                window.location.href = 'login-v2.html';
-            } else if (user.role === 'admin') {
-                window.location.href = 'admin-v2.html';
-            } else {
-                window.location.href = 'submit-v2.html';
-            }
-        });
-    }
+    // Add website button (FIX)
+const addBtn = document.getElementById('addWebsiteBtn'); // ❗ hapus yang admin
+if (addBtn) {
+    addBtn.addEventListener('click', () => {
+        const user = getCurrentUser();
+        if (!user) {
+            window.location.href = 'login-v2.html';
+        } else if (user.role === 'admin') {
+            window.location.href = 'admin-v2.html';
+        } else {
+            window.location.href = 'submit-v2.html';
+        }
+    });
+}
 
     // Login form
     const loginForm = document.getElementById('login-form');
@@ -482,70 +482,94 @@ function renderFilteredWebsites(filteredWebsites) {
     });
 }
 
-// Single entry point
 document.addEventListener("DOMContentLoaded", () => {
     console.log("App Start");
     initApp();
 
-    const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('show');
+    // === MODAL LOGIC (FIXED) ===
+    const modal = document.getElementById('website-modal');
+    const openBtn = document.getElementById('add-website-btn');
+    const closeBtn = document.querySelector('.close');
+
+    if (openBtn && modal) {
+        openBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // 🔥 penting
+            console.log("OPEN MODAL 🚀");
+            modal.style.display = 'block';
+        });
+    }
+
+    if (closeBtn && modal) {
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+    }
+
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
         }
     });
-});
 
-document.querySelectorAll('.fade-in').forEach(el => {
-    observer.observe(el);
-});
-
-const cursor = document.createElement('div');
-cursor.classList.add('cursor');
-document.body.appendChild(cursor);
-
-document.addEventListener('mousemove', (e) => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-});
-
-const trailCount = 10;
-const trails = [];
-
-for (let i = 0; i < trailCount; i++) {
-    const dot = document.createElement('div');
-    dot.classList.add('cursor-trail');
-    document.body.appendChild(dot);
-    trails.push({ el: dot, x: 0, y: 0 });
-}
-
-let mouseX = 0;
-let mouseY = 0;
-
-document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-});
-
-function animateTrail() {
-    let x = mouseX;
-    let y = mouseY;
-
-    trails.forEach((trail, index) => {
-        trail.x += (x - trail.x) * 0.3;
-        trail.y += (y - trail.y) * 0.3;
-
-        trail.el.style.left = trail.x + 'px';
-        trail.el.style.top = trail.y + 'px';
-        trail.el.style.opacity = 1 - index / trailCount;
-        trail.el.style.transform = `scale(${1 - index / trailCount})`;
-
-        x = trail.x;
-        y = trail.y;
+    // === ANIMATIONS & CURSOR (biarkan tetap di sini) ===
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('show');
+            }
+        });
     });
 
-    requestAnimationFrame(animateTrail);
-}
+    document.querySelectorAll('.fade-in').forEach(el => {
+        observer.observe(el);
+    });
 
-animateTrail();
+    const cursor = document.createElement('div');
+    cursor.classList.add('cursor');
+    document.body.appendChild(cursor);
+
+    document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+    });
+
+    const trailCount = 10;
+    const trails = [];
+
+    for (let i = 0; i < trailCount; i++) {
+        const dot = document.createElement('div');
+        dot.classList.add('cursor-trail');
+        document.body.appendChild(dot);
+        trails.push({ el: dot, x: 0, y: 0 });
+    }
+
+    let mouseX = 0;
+    let mouseY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+
+    function animateTrail() {
+        let x = mouseX;
+        let y = mouseY;
+
+        trails.forEach((trail, index) => {
+            trail.x += (x - trail.x) * 0.3;
+            trail.y += (y - trail.y) * 0.3;
+
+            trail.el.style.left = trail.x + 'px';
+            trail.el.style.top = trail.y + 'px';
+            trail.el.style.opacity = 1 - index / trailCount;
+            trail.el.style.transform = `scale(${1 - index / trailCount})`;
+
+            x = trail.x;
+            y = trail.y;
+        });
+
+        requestAnimationFrame(animateTrail);
+    }
+
+    animateTrail();
 });
-
