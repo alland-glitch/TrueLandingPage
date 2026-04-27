@@ -449,8 +449,8 @@ function initializeData() {
 
     if (getWebsites().length === 0) {
         const sampleWebsites = [
-            { id: 1, name: 'Google', description: 'Search engine', link: 'https://google.com', ownerId: 1, category: 'Tools' },
-            { id: 2, name: 'GitHub', description: 'Code repository', link: 'https://github.com', ownerId: 1, category: 'Tech' }
+            { id: 1, name: 'Google', description: 'Search engine', url: 'https://google.com', ownerId: 1, category: 'Tools' },
+            { id: 2, name: 'GitHub', description: 'Code repository', url: 'https://github.com', ownerId: 1, category: 'Tech' }
         ];
         saveWebsites(sampleWebsites);
     }
@@ -681,7 +681,7 @@ function renderWebsites(searchTerm = '') {
                 </div>
                 <h4>${website.name}</h4>
                 <p>${website.description}</p>
-                <a href="${website.link}" target="_blank" class="btn btn-primary">Visit</a>
+                <button class="visit-btn btn btn-primary" data-url="${website.url}">Visit</button>
             `;
             websiteList.appendChild(card);
         });
@@ -984,8 +984,8 @@ function approveWebsite(id) {
         const approvedWebsite = {
             id: Date.now(),
             name: submission.name,
+            url: submission.url,
             description: submission.description,
-            link: submission.url,
             ownerId: 1, // Admin owner
             category: 'General'
         };
@@ -1179,6 +1179,20 @@ document.addEventListener('DOMContentLoaded', () => {
         renderFriendsWebsites();
         document.getElementById('search').addEventListener('input', (e) => {
             renderWebsites(e.target.value);
+        });
+
+        // Event delegation for visit buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('visit-btn')) {
+                const url = e.target.dataset.url;
+                console.log("Opening URL:", url);
+                if (!url) {
+                    alert("Link tidak tersedia!");
+                    return;
+                }
+                window.open(url, "_blank");
+                trackClick('visitWebsite');
+            }
         });
 
         // Add website button logic
