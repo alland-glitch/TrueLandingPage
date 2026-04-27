@@ -33,6 +33,107 @@ function getCurrentUser() {
     return JSON.parse(localStorage.getItem('currentUser')) || null;
 }
 
+// Analytics functions
+function getAnalytics() {
+    return JSON.parse(localStorage.getItem('analytics')) || {
+        pageViews: {},
+        clicks: {}
+    };
+}
+
+function saveAnalytics(analytics) {
+    localStorage.setItem('analytics', JSON.stringify(analytics));
+}
+
+function trackPageView() {
+    let analytics = getAnalytics();
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+
+    if (!analytics.pageViews[page]) {
+        analytics.pageViews[page] = 0;
+    }
+
+    analytics.pageViews[page]++;
+    saveAnalytics(analytics);
+}
+
+function trackClick(id) {
+    let analytics = getAnalytics();
+
+    if (!analytics.clicks[id]) {
+        analytics.clicks[id] = 0;
+    }
+
+    analytics.clicks[id]++;
+    saveAnalytics(analytics);
+}
+
+function getAnalyticsStats() {
+    const analytics = getAnalytics();
+    const totalPageViews = Object.values(analytics.pageViews).reduce((sum, count) => sum + count, 0);
+    const totalClicks = Object.values(analytics.clicks).reduce((sum, count) => sum + count, 0);
+
+    return {
+        pageViews: analytics.pageViews,
+        clicks: analytics.clicks,
+        totalPageViews,
+        totalClicks
+    };
+}
+
+function renderAnalyticsStats() {
+    const stats = getAnalyticsStats();
+    const container = document.getElementById('analytics-stats');
+
+    if (!container) return;
+
+    let html = `
+        <div class="analytics-overview">
+            <h3>Analytics Overview</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>Total Page Views</h4>
+                    <p class="stat-number">${stats.totalPageViews}</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Total Clicks</h4>
+                    <p class="stat-number">${stats.totalClicks}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="analytics-details">
+            <div class="page-views-section">
+                <h4>Page Views by Page</h4>
+                <div class="stats-list">
+    `;
+
+    for (const [page, count] of Object.entries(stats.pageViews)) {
+        html += `<div class="stat-item"><span>${page}</span><span>${count} views</span></div>`;
+    }
+
+    html += `
+                </div>
+            </div>
+
+            <div class="clicks-section">
+                <h4>Clicks by Element</h4>
+                <div class="stats-list">
+    `;
+
+    for (const [element, count] of Object.entries(stats.clicks)) {
+        html += `<div class="stat-item"><span>${element}</span><span>${count} clicks</span></div>`;
+    }
+
+    html += `
+                </div>
+            </div>
+        </div>
+    `;
+
+    container.innerHTML = html;
+}
+
 function createToastContainer() {
     let container = document.getElementById('toast-container');
     if (!container) {
@@ -115,6 +216,124 @@ function logout() {
     setTimeout(() => {
         window.location.href = 'login.html';
     }, 500);
+}
+
+function getSavedTheme() {
+    return localStorage.getItem('theme');
+}
+
+function updateThemeToggleIcon() {
+    const toggles = document.querySelectorAll('#themeToggle');
+    toggles.forEach(btn => {
+        btn.textContent = document.documentElement.classList.contains('light-mode') ? '🌙' : '☀️';
+    });
+}
+
+function applyTheme(theme) {
+    if (theme === 'light') {
+        document.documentElement.classList.add('light-mode');
+    } else {
+        document.documentElement.classList.remove('light-mode');
+    }
+    updateThemeToggleIcon();
+}
+
+function initTheme() {
+    const savedTheme = getSavedTheme();
+    if (savedTheme) {
+        applyTheme(savedTheme);
+    } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+        applyTheme('light');
+        localStorage.setItem('theme', 'light');
+    } else {
+        applyTheme('dark');
+    }
+}
+
+function toggleTheme() {
+    const isLightMode = document.documentElement.classList.toggle('light-mode');
+    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+    updateThemeToggleIcon();
+}
+
+function setupScrollAnimations() {
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('show');
+                obs.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.15
+    });
+
+    document.querySelectorAll('.fade-in').forEach(el => {
+        observer.observe(el);
+    });
+}
+
+function createProgressBar() {
+    if (!document.getElementById('progressBar')) {
+        const progressBar = document.createElement('div');
+        progressBar.id = 'progressBar';
+        document.body.appendChild(progressBar);
+    }
+}
+
+function updateProgressBar() {
+    const progressBar = document.getElementById('progressBar');
+    if (!progressBar) return;
+
+    const scroll = document.documentElement.scrollTop || document.body.scrollTop;
+    const total = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    progressBar.style.width = total > 0 ? `${Math.min(100, (scroll / total) * 100)}%` : '0%';
+}
+
+function initCursor() {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+
+    const cursor = document.createElement('div');
+    cursor.className = 'cursor';
+    document.body.appendChild(cursor);
+
+    document.addEventListener('mousemove', e => {
+        cursor.style.left = `${e.clientX}px`;
+        cursor.style.top = `${e.clientY}px`;
+    });
+
+    document.addEventListener('mouseleave', () => {
+        cursor.style.opacity = '0';
+    });
+
+    document.addEventListener('mouseenter', () => {
+        cursor.style.opacity = '1';
+    });
+
+    document.querySelectorAll('button, a, .card, .nav-link').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(1.9)';
+        });
+        el.addEventListener('mouseleave', () => {
+            cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+        });
+    });
+}
+
+function initButtonRipples() {
+    document.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', e => {
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple';
+            const rect = btn.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+            ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+            btn.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+    });
 }
 
 // Update navbar based on login status
@@ -338,7 +557,7 @@ function renderFriendsWebsites() {
                         <small>👁️ ${rankData.views} views | 🖱️ ${rankData.clicks} clicks</small>
                     </div>
                     <div class="card-actions">
-                        <a href="${site.path}" target="_blank" onclick="addClick('${site.name}')" class="btn btn-primary">Visit Website</a>
+                        <a href="${site.path}" target="_blank" onclick="addClick('${site.name}'); trackClick('visitWebsite')" class="btn btn-primary">Visit Website</a>
                         ${editButton}
                     </div>
                 `;
@@ -381,7 +600,7 @@ function renderFriendsWebsites() {
                                 <small>👁️ ${rankData.views} views | 🖱️ ${rankData.clicks} clicks</small>
                             </div>
                             <div class="card-actions">
-                                <a href="${site.path}" target="_blank" onclick="addClick('${site.name}')" class="btn btn-primary">Visit Website</a>
+                                <a href="${site.path}" target="_blank" onclick="addClick('${site.name}'); trackClick('visitWebsite')" class="btn btn-primary">Visit Website</a>
                                 ${editButton}
                             </div>
                         `;
@@ -417,7 +636,7 @@ function renderFriendsWebsites() {
                                 <small>👁️ ${rankData.views} views | 🖱️ ${rankData.clicks} clicks</small>
                             </div>
                             <div class="card-actions">
-                                <a href="${site.path}" target="_blank" onclick="addClick('${site.name}')" class="btn btn-primary">Visit Website</a>
+                                <a href="${site.path}" target="_blank" onclick="addClick('${site.name}'); trackClick('visitWebsite')" class="btn btn-primary">Visit Website</a>
                                 ${editButton}
                             </div>
                         `;
@@ -845,13 +1064,108 @@ function handleScroll() {
     });
 }
 
+// Create analytics charts
+function createAnalyticsCharts() {
+    const analytics = getAnalytics();
+
+    // Page Views Chart
+    const ctx = document.getElementById('analyticsChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(analytics.pageViews),
+                datasets: [{
+                    label: 'Page Views',
+                    data: Object.values(analytics.pageViews),
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // Clicks Chart
+    const clickCtx = document.getElementById('clickChart');
+    if (clickCtx) {
+        new Chart(clickCtx, {
+            type: 'pie',
+            data: {
+                labels: Object.keys(analytics.clicks),
+                datasets: [{
+                    data: Object.values(analytics.clicks),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 205, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    }
+}
+
+// Display top project and additional stats
+function displayTopProjectAndStats() {
+    const analytics = getAnalytics();
+    const clicks = analytics.clicks;
+
+    // Determine top project
+    let topProject = 'None';
+    if (Object.keys(clicks).length > 0) {
+        topProject = Object.keys(clicks).reduce((a, b) => {
+            return clicks[a] > clicks[b] ? a : b;
+        });
+    }
+
+    // Display top project
+    const topProjectEl = document.getElementById('topProject');
+    if (topProjectEl) {
+        topProjectEl.innerHTML = `<h3>🔥 Top Project: ${topProject}</h3>`;
+    }
+
+    // Display additional stats
+    const statsEl = document.getElementById('stats');
+    if (statsEl) {
+        const totalViews = Object.values(analytics.pageViews).reduce((a, b) => a + b, 0);
+        const totalClicks = Object.values(analytics.clicks).reduce((a, b) => a + b, 0);
+        statsEl.innerHTML = `
+            <p>👁️ Total Views: ${totalViews}</p>
+            <p>🖱️ Total Clicks: ${totalClicks}</p>
+        `;
+    }
+}
+
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
+    trackPageView(); // Track page view on load
     initializeData();
     updateNavbar();
     setActiveNavLinks();
     enableSmoothScroll();
     handleScroll(); // Initial check
+    setupScrollAnimations();
+    createProgressBar();
+    updateProgressBar();
+    initCursor();
+    initButtonRipples();
+    window.addEventListener('scroll', () => requestAnimationFrame(updateProgressBar));
 
     // Landing page
     if (document.getElementById('search')) {
@@ -900,6 +1214,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Initialize theme toggle state
+    initTheme();
+    const themeToggles = document.querySelectorAll('#themeToggle');
+    themeToggles.forEach(toggle => {
+        toggle.addEventListener('click', toggleTheme);
+    });
+
     // Admin page
     if (document.getElementById('website-list-admin')) {
         const currentUser = getCurrentUser();
@@ -909,6 +1230,9 @@ document.addEventListener('DOMContentLoaded', () => {
             renderAdminWebsites();
             renderPendingSubmissions();
             renderCustomNames();
+            renderAnalyticsStats(); // Add analytics stats to admin dashboard
+            createAnalyticsCharts(); // Create charts
+            displayTopProjectAndStats(); // Display top project and stats
             const adminSearch = document.getElementById('admin-search');
             if (adminSearch) {
                 adminSearch.addEventListener('input', (e) => {

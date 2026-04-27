@@ -23,11 +23,12 @@
                     </ul>
                 </li>
             </ul>
+            <button id="themeToggle" class="btn btn-secondary theme-toggle" aria-label="Toggle theme">☀️</button>
         </div>
     </nav>
     <div id="toast-container" class="toast-container"></div>
 
-    <section class="submit-section">
+    <section class="submit-section fade-in">
         <div class="container">
             <div class="submit-container">
                 <h2>Submit Your Website</h2>
@@ -46,7 +47,7 @@
                     <label for="website-description">Description</label>
                     <textarea id="website-description" name="description" required placeholder="Describe what this website is about..."></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary btn-large">Submit for Review</button>
+                <button type="submit" class="btn btn-primary btn-large" onclick="trackClick('submitWebsite')">Submit for Review</button>
             </form>
                 <div id="submit-message" class="submit-message"></div>
             </div>
