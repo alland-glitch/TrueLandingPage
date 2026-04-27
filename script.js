@@ -946,35 +946,32 @@ function handleSubmitForm(e) {
 // Website form handler (add/edit)
 function handleWebsiteForm(e) {
     e.preventDefault();
-    const id = document.getElementById('website-id').value;
-    const name = document.getElementById('website-name').value;
-    const description = document.getElementById('website-description').value;
-    const link = document.getElementById('website-link').value;
+    const name = document.getElementById('modal-name').value;
+    const url = document.getElementById('modal-url').value;
+    const description = document.getElementById('modal-description').value;
     const currentUser = getCurrentUser();
+
+    if (!currentUser || currentUser.role !== 'admin') {
+        showToast('Unauthorized', 'error');
+        return;
+    }
 
     const websites = getWebsites();
 
-    if (id) {
-        // Edit
-        const index = websites.findIndex(w => w.id == id);
-        if (index !== -1 && websites[index].ownerId === currentUser.id) {
-            websites[index] = { ...websites[index], name, description, link };
-        }
-    } else {
-        // Add
-        const newWebsite = {
-            id: Date.now(),
-            name,
-            description,
-            link,
-            ownerId: currentUser.id
-        };
-        websites.push(newWebsite);
-    }
+    // Add new website
+    const newWebsite = {
+        id: Date.now(),
+        name,
+        url,
+        description,
+        ownerId: currentUser.id
+    };
+    websites.push(newWebsite);
 
     saveWebsites(websites);
     closeModal();
     renderAdminWebsites();
+    showToast('Website added successfully!', 'success');
 }
 
 // Approve website submission
@@ -1024,16 +1021,24 @@ function deleteWebsite(id) {
 
 // Modal functions
 function openModal() {
-    document.getElementById('website-id').value = '';
-    document.getElementById('website-name').value = '';
-    document.getElementById('website-description').value = '';
-    document.getElementById('website-link').value = '';
-    document.getElementById('modal-title').textContent = 'Add Website';
-    document.getElementById('website-modal').style.display = 'block';
+    console.log("Button clicked - opening modal");
+    const modal = document.getElementById('website-modal');
+    if (modal) {
+        // Clear form fields
+        document.getElementById('modal-name').value = '';
+        document.getElementById('modal-url').value = '';
+        document.getElementById('modal-description').value = '';
+        modal.style.display = 'block';
+    } else {
+        console.error("Modal not found!");
+    }
 }
 
 function closeModal() {
-    document.getElementById('website-modal').style.display = 'none';
+    const modal = document.getElementById('website-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
 }
 
 // Edit website name function
@@ -1154,6 +1159,7 @@ function displayTopProjectAndStats() {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("JS Loaded - DOMContentLoaded fired");
     trackPageView(); // Track page view on load
     initializeData();
     updateNavbar();
